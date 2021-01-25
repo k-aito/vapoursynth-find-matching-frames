@@ -13,7 +13,7 @@ The goal of this script was to be able to compare easily multiple source without
 ## Use
 
 ```
-usage: compare.py [-h] -s SOURCES [SOURCES ...] [-n NUMBER] [-o OUTPUT]
+usage: vapoursynth-find-matching-frames.py [-h] -s SOURCES [SOURCES ...] [-n NUMBER] [-o OUTPUT]
                   [-r RATIO] [-p] [--noref] [-f FRAMES] [-v]
                   [--resizer RESIZER] [-g]
 

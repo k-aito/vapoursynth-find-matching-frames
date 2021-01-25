@@ -11,7 +11,7 @@ apt update
 apt install vapoursynth
 ```
 
-## OpenCV for Pyhton installation
+## OpenCV for Python installation
 
 ```
 apt update
