@@ -91,6 +91,11 @@ parser.add_argument("-g", "--grouping",
                     required=False,
                     help="Use FRAME-SOURCES-(ORIGINAL_FRAME).png as output format instead of SOURCES-FRAME-(ORIGINAL_FRAME).png (default: disabled)",
                     action='store_true')
+# OPTIONAL: -c / --common
+parser.add_argument("-c", "--common",
+                    required=False,
+                    help="Doesn't search for matching frames because the encodes comes from the same source (default: disabled)",
+                    action='store_true')
 
 args = parser.parse_args()
 
@@ -201,11 +206,14 @@ threads = []
 for i, source in enumerate(sd):
   # We skip sd[0] because it's the reference
   if i != 0:
-    print("- Search for the compared frames in {}".format(os.path.basename(args.sources[i])))
-    if args.precision:
-      print("- Precision is enabled")
+    if args.common:
+      print("- Common mode is enabled")
     else:
-      print("- Precision is disabled")
+      print("- Search for the compared frames in {}".format(os.path.basename(args.sources[i])))
+      if args.precision:
+        print("- Precision is enabled")
+      else:
+        print("- Precision is disabled")
 
     # Workaround we need to precreate the position for list
     frames.append([])
@@ -214,30 +222,34 @@ for i, source in enumerate(sd):
 
     # Compare each frame of the source
     def bestMatch(source, i):
-      for numberSourceFrame in range(0, source.num_frames):
+      if args.common:
         for k, ref in enumerate(frames[0]):
-          # Actual frame result
-          try:
-            # Check difference for all the planes and add them together lowest they are best it match
-            if args.precision:
-              plane0 = core.std.PlaneStats(ref['videoframe'], source[numberSourceFrame], plane=0).get_frame(0).props['PlaneStatsDiff']
-              plane1 = core.std.PlaneStats(ref['videoframe'], source[numberSourceFrame], plane=1).get_frame(0).props['PlaneStatsDiff']
-              plane2 = core.std.PlaneStats(ref['videoframe'], source[numberSourceFrame], plane=2).get_frame(0).props['PlaneStatsDiff']
-              compare = { "frame": numberSourceFrame, "PlaneStatsDiff": plane0 + plane1 + plane2 }
-            else:
-              plane0 = core.std.PlaneStats(ref['videoframe'], source[numberSourceFrame], plane=0).get_frame(0).props['PlaneStatsDiff']
-              compare = { "frame": numberSourceFrame, "PlaneStatsDiff": plane0 }
-          except:
-            print("ERROR: {}".format(sys.exc_info()[1]))
-            os._exit(1)
-          # Take the actual frame if the match is better
-          if (frames[i][k]['frame'] == -1) or (frames[i][k]['PlaneStatsDiff'] > compare['PlaneStatsDiff']):
-            frames[i][k] = compare
-        # Have output each 1000 frames
-        if numberSourceFrame % 1000 == 0:
-          print("PROGRESS: Source {} after {} frames".format(os.path.basename(args.sources[i]), numberSourceFrame))
-          if args.verbose:
-            pprint.pprint(frames[i], width=1)
+          frames[i][k] = { "frame": ref['frame'], "PlaneStatsDiff": -1 }
+      else:
+        for numberSourceFrame in range(0, source.num_frames):
+          for k, ref in enumerate(frames[0]):
+            # Actual frame result
+            try:
+              # Check difference for all the planes and add them together lowest they are best it match
+              if args.precision:
+                plane0 = core.std.PlaneStats(ref['videoframe'], source[numberSourceFrame], plane=0).get_frame(0).props['PlaneStatsDiff']
+                plane1 = core.std.PlaneStats(ref['videoframe'], source[numberSourceFrame], plane=1).get_frame(0).props['PlaneStatsDiff']
+                plane2 = core.std.PlaneStats(ref['videoframe'], source[numberSourceFrame], plane=2).get_frame(0).props['PlaneStatsDiff']
+                compare = { "frame": numberSourceFrame, "PlaneStatsDiff": plane0 + plane1 + plane2 }
+              else:
+                plane0 = core.std.PlaneStats(ref['videoframe'], source[numberSourceFrame], plane=0).get_frame(0).props['PlaneStatsDiff']
+                compare = { "frame": numberSourceFrame, "PlaneStatsDiff": plane0 }
+            except:
+              print("ERROR: {}".format(sys.exc_info()[1]))
+              os._exit(1)
+            # Take the actual frame if the match is better
+            if (frames[i][k]['frame'] == -1) or (frames[i][k]['PlaneStatsDiff'] > compare['PlaneStatsDiff']):
+              frames[i][k] = compare
+          # Have output each 1000 frames
+          if numberSourceFrame % 1000 == 0:
+            print("PROGRESS: Source {} after {} frames".format(os.path.basename(args.sources[i]), numberSourceFrame))
+            if args.verbose:
+              pprint.pprint(frames[i], width=1)
 
     # Launch a thread for the sd sources without sd[0]
     threads.append(threading.Thread(target=bestMatch, args=(source, i)))
