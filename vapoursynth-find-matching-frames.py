@@ -96,6 +96,11 @@ parser.add_argument("-c", "--common",
                     required=False,
                     help="Doesn't search for matching frames because the encodes comes from the same source (default: disabled)",
                     action='store_true')
+# OPTIONAL: --progressive
+parser.add_argument("--progressive",
+                    required=False,
+                    help='It only force the SetFieldBased to 0 like it would be a progressive video, it can be usefull with the error "Resize error 1027: image dimensions must be divisible by subsampling factor"',
+                    action='store_true')
 
 args = parser.parse_args()
 
@@ -118,7 +123,11 @@ s = []
 print("INFO: Load sources")
 for path in args.sources:
   print("- Load {} with ffms2".format(path))
-  s.append(core.ffms2.Source(source=path))
+  videoSource = core.ffms2.Source(source=path)
+  if args.progressive:
+    print("Change SetFieldBased to 0")
+    videoSource = core.std.SetFieldBased(videoSource, 0)
+  s.append(videoSource)
 print("")
 
 # Find the max ratio to dowscale the first but that give et multiple of 2

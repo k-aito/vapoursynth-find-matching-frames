@@ -17,6 +17,7 @@ usage: vapoursynth-find-matching-frames.py [-h] -s SOURCES [SOURCES ...]
                                            [-n NUMBER] [-o OUTPUT] [-r RATIO]
                                            [-p] [--noref] [-f FRAMES] [-v]
                                            [--resizer RESIZER] [-g] [-c]
+                                           [--progressive]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -49,6 +50,10 @@ optional arguments:
                         (default: disabled)
   -c, --common          Doesn't search for matching frames because the encodes
                         comes from the same source (default: disabled)
+  --progressive         It only force the SetFieldBased to 0 like it would be
+                        a progressive video, it can be usefull with the error
+                        "Resize error 1027: image dimensions must be divisible
+                        by subsampling factor"
 ```
 
 
