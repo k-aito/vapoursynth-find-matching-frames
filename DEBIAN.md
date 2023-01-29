@@ -17,3 +17,9 @@ apt install vapoursynth
 apt update
 apt install python3-opencv
 ```
+## Install mvsfunc
+
+```
+# Go in vapoursynth-find-matching-frames directory
+git clone https://github.com/HomeOfVapourSynthEvolution/mvsfunc.git
+```
