@@ -114,9 +114,12 @@ import os
 import threading
 import pprint
 if sys.platform == 'linux':
-  import mvsfunc as mvs
+  from mvsfunc.mvsfunc import mvsfunc as mvs
 
-core = vs.get_core()
+try:
+  core = vs.get_core()
+except AttributeError:
+  core = vs.core
 
 # Define all video sources
 s = []
