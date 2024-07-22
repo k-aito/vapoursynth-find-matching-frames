@@ -276,33 +276,19 @@ for i in threads:
 print("")
 
 # For using imwri it's based on https://gist.github.com/OrangeChannel/c702baf34b4d4e4383c8209b8eadd8fb
-# Imwri is not included by default (for linux) better to take a generic method based on https://gist.github.com/alemonmk/4182404c083a2a25d33a
-if sys.platform == "win32" or sys.platform == "win64":
-  # Method for saving picture
-  method = "imwri plugin"
-  def save_picture(clip, filename):
-    print("- Save {}".format(filename))
-    # It use Point as resize method in th gist but maybe it would be adapter from args.resizer too?
-    clip = core.resize.Point(clip,
-                              width=clip.width,
-                              height=clip.height,
-                              format=vs.RGB24,
-                              matrix_in_s='709')
-    # Use overwrite so that we not need a number in the filename
-    out = core.imwri.Write(clip, 'PNG', filename=filename, overwrite=True)
-    out.get_frame(0)
-else:
-  # Method for saving picture
-  method = "opencv-python generic method"
-  import numpy as np
-  import cv2 as cv
-  def save_picture(clip, filename):
-    print("- Save {}".format(filename))
-    # In the gist it use Spline64 but maybe it would be better to use Spline36 like the rest?
-    rgbcl = mvs.ToRGB(input=clip, depth=16, kernel='spline64')
-    planes_count = rgbcl.format.num_planes
-    v = cv.merge([np.array(rgbcl.get_frame(0).get_read_array(i), copy=False) for i in reversed(range(planes_count))])
-    cv.imwrite(filename, v)
+# Method for saving picture
+method = "imwri plugin"
+def save_picture(clip, filename):
+  print("- Save {}".format(filename))
+  # It use Point as resize method in th gist but maybe it would be adapter from args.resizer too?
+  clip = core.resize.Point(clip,
+                            width=clip.width,
+                            height=clip.height,
+                            format=vs.RGB24,
+                            matrix_in_s='709')
+  # Use overwrite so that we not need a number in the filename
+  out = core.imwri.Write(clip, 'PNG', filename=filename, overwrite=True)
+  out.get_frame(0)
 
   # Resize the videos
   print("INFO: Resize the videos")

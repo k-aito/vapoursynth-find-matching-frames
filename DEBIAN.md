@@ -2,20 +2,16 @@
 
 ## Add deb-multimedia repo
 
-Follow the instructions on the [official website](https://www.deb-multimedia.org/)
+Follow the instructions on the [official website](https://www.deb-multimedia.org/) for stable and stable-backports
+
+Tested on Debian 12 (Bookworm)
 
 ## Vapoursynth installation
 
 ```bash
 apt update
-apt install vapoursynth
-```
-
-## OpenCV for Python installation
-
-```
-apt update
-apt install python3-opencv
+apt install vapoursynth vapoursynth-fmtconv vapoursynth-imwri
+apt install python3-vapoursynth-mvsfunc
 ```
 ## Install mvsfunc
 
