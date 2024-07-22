@@ -76,7 +76,6 @@ vapoursynth-find-matching-frames.py --sources source1.mkv source2.mkv
 ## Credits
 
 * Use IMWRI to save pictures (https://gist.github.com/OrangeChannel/c702baf34b4d4e4383c8209b8eadd8fb)
-* Use a generic method to save pictures (https://gist.github.com/alemonmk/4182404c083a2a25d33a)
 
 ## Similar projects
 
